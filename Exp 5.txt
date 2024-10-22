@@ -1,0 +1,53 @@
+1) CREATE A NODE
+CREATE (:Person {name: "EKTA"})
+
+
+
+2) View a Node (MATCH  IT) 
+
+MATCH (p:Person {name: "EKTA"}) RETURN p
+
+
+
+3) CREATE A MULTIPLE NODE 
+
+CREATE (:Person {name: "EKTA"}),
+
+ 
+
+(:Person {name: "ASHVIN"}),
+
+
+(:Product {productName: "Laptop"}),                         (:Place {location: "New York"})
+
+
+
+4) create a first node 
+
+
+CREATE (:Person {name: "EKTA"})
+
+
+
+5) create a second node 
+
+CREATE (:Book {title: "The Great Gatsby"})
+
+
+
+6)Define a relationships  READS 
+
+
+MATCH (person:Person {name: "EKTA"}) 
+
+MATCH (book:Book {title: "The Great Gatsby"}) CREATE (person)-[:READS]->(book)
+
+
+
+7) DELETE A RELATIONSHIP 
+
+
+MATCH (person)     
+
+DETACH   DELETE person  
+
