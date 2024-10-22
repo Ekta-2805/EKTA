@@ -1,0 +1,78 @@
+!pip install pyspark
+  ---------------------
+  from pyspark.sql import SparkSession
+
+# Initialize Spark Session
+spark = SparkSession.builder.appName("IplCricketAnalysis").getOrCreate()
+
+# Load CSV file
+file_path = "/content/batting.csv"
+df = spark.read.csv(file_path, header=True, inferSchema=True)
+
+# Show the first few rows of the DataFrame
+df.show(5)
+
+# Print the schema to understand the structure of the data
+df.printSchema()
+--------------------------------------
+  from pyspark.sql.functions import count, when, col
+df.select([count(when(col(c).isNull(),c)).alias(c) for c in df.columns]).show()
+    -------------------------------------------------
+    df_clean = df.dropna()
+df_clean = df_clean.dropDuplicates()
+    ---------------------------------------
+    import matplotlib.pyplot as plt 
+
+pandas_df = df_clean.toPandas()
+
+pandas_df.hist(figsize=(10,8))
+plt.show()
+    ----------------------------------------
+    avg_stats_bybatsman=df.groupBy('PlayerName').agg({ # Changed 'batsmanName' to 'PlayerName'
+    'runs': 'avg',
+    'balls': 'avg',
+    'fours': 'avg',
+    'sixes': 'avg',
+    'strikeRate': 'avg'
+    })
+#Fixed: Corrected the variable name used in orderBy to match the assignment 
+avg_stats_by_batsman_sorted=avg_stats_bybatsman.orderBy('avg(runs)', ascending=False) 
+
+avg_stats_by_batsman_sorted.show(20)
+  --------------------------------
+  avg_sr_by_batsman = df.groupBy('PlayerName').agg({'strikeRate': 'avg'})
+avg_stats_by_batsman_sorted = avg_sr_by_batsman.orderBy('avg(strikeRate)', ascending=False)
+avg_stats_by_batsman_sorted.show(20)
+----------------------------------------------
+  # Import necessary libraries
+from pyspark.sql.functions import col
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.clustering import KMeans
+
+# Convert the 'SR' column to numeric type (float), replacing invalid values with None (NaN)
+df_clean = df_clean.withColumn("strikeRate", col("strikeRate").cast("float"))
+
+# Handle any NaN values (optional), for example by replacing NaN values with 0
+df_clean = df_clean.na.fill({"strikeRate": 0})
+
+# Feature Engineering: Combine relevant columns into a single feature vector
+# Changed 'runs', 'balls', 'fours', 'sixes' to 'Runs', 'Balls', 'Fours', 'Sixes' to match the actual column names
+assembler = VectorAssembler(
+    inputCols=["Runs", "Balls", "Fours", "Sixes", "strikeRate"],  # Ensure these columns are numeric
+    outputCol="features"
+)
+
+# Transform the dataset to include the features vector
+data = assembler.transform(df_clean)
+
+# Apply KMeans Clustering
+kmeans = KMeans().setK(3).setSeed(1)  # Adjust the number of clusters as needed
+model = kmeans.fit(data)
+
+# Predict clusters and add them to the dataset
+clusters = model.transform(data)
+
+# Show the clustered results for relevant columns and predicted clusters
+clusters.select("PlayerName", "Runs", "Balls", "Fours", "Sixes", "strikeRate", "prediction").show(20)
+  --------------------------------------------------------------------
+  df_clean.write.csv("db_batting.csv")
