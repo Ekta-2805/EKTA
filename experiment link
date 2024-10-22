@@ -1,0 +1,37 @@
+5) NoSQL Queries using Neo4J 
+1) CREATE A NODE
+CREATE (:Person {name: "EKTA"})
+
+2) View a Node (MATCH  IT) 
+MATCH (p:Person {name: "EKTA"}) RETURN p
+
+3) CREATE A MULTIPLE NODE 
+CREATE (:Person {name: "EKTA"}),
+(:Person {name: "ASHVIN"}),
+(:Product {productName: "Laptop"}), 
+(:Place {location: "New York"})
+
+4) create a first node 
+CREATE (:Person {name: "EKTA"})
+
+5) create a second node 
+CREATE (:Book {title: "The Great Gatsby"})
+
+6)Define a relationships  READS 
+MATCH (person:Person {name: "EKTA"}) 
+MATCH (book:Book {title: "The Great Gatsby"}) 
+CREATE (person)-[:READS]->(book)
+
+7) DELETE A RELATIONSHIP 
+MATCH (person)     
+DETACH   DELETE person  
+
+---------------------------------------------------------------------------------------------
+6) Bloom Filter 
+https://colab.research.google.com/drive/1QkAIukSUzqKK-gLDX2FqBLmgLkngJi-e?usp=drive_link
+7) Data Analysis 
+https://colab.research.google.com/drive/19hEgDTLuQVzE0inIugm1ThQMFVDhe6rw?usp=drive_link
+8) Social Network Analysis 
+https://colab.research.google.com/drive/1j5y9LY7cKu6Pbn44aZ4QTM-XV6DDUZoT?usp=drive_link
+9) Data Visualization 
+https://colab.research.google.com/drive/1-TMrhqNGc7Ad6vpOUrJOTe9q7HOBwXbN?usp=drive_link
